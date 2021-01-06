@@ -20,25 +20,36 @@ function App() {
   const [showList, setShowList] = useState(false);
   const fetchFemaClaims = () =>
     axios.get(process.env.REACT_APP_AWS_URL, { params: { zip } });
-  const rcResp = useQuery('fetchFemaClaims', fetchFemaClaims, {
-    enabled: false,
-  });
+  const { status, data, error, isFetching, refetch } = useQuery(
+    'fetchFemaClaims',
+    fetchFemaClaims,
+    {
+      enabled: false,
+    }
+  );
 
-  console.log('rcResp', rcResp);
+  console.log('data', data);
   useEffect(() => {
     if (zip) {
-      rcResp.refetch();
+      refetch();
       setShowList(false);
     }
-  }, [zip]);
+  }, [zip, refetch]);
 
   return (
     <div className={classes.root}>
       <Header />
       <ZipField setZip={setZip} />
       <Grid container spacing={3} className={classes.gridContainer}>
-        <Map {...rcResp} setShowList={setShowList} />
-        <List {...rcResp} showList={showList} />
+        <Map
+          status={status}
+          data={data}
+          error={error}
+          isFetching={isFetching}
+          refetch={refetch}
+          setShowList={setShowList}
+        />
+        <List data={data} showList={showList} />
       </Grid>
     </div>
   );
