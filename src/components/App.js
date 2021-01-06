@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery } from 'react-query'
-import axios from 'axios'
-import Header from './Header'
-import ZipField from './ZipField'
-import Map from './Map'
-import List from './List'
+import { useQuery } from 'react-query';
+import axios from 'axios';
+import Header from './Header';
+import ZipField from './ZipField';
+import Map from './Map';
+import List from './List';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,18 +16,21 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  const [zip, setZip] = useState('')
-  const [showList, setShowList] = useState(false)
-  const fetchFemaClaims = () => axios.get(process.env.REACT_APP_AWS_URL, { params: { zip } })
-  const rcResp = useQuery('fetchFemaClaims', fetchFemaClaims, { enabled: false })
+  const [zip, setZip] = useState('');
+  const [showList, setShowList] = useState(false);
+  const fetchFemaClaims = () =>
+    axios.get(process.env.REACT_APP_AWS_URL, { params: { zip } });
+  const rcResp = useQuery('fetchFemaClaims', fetchFemaClaims, {
+    enabled: false,
+  });
 
-  console.log('rcResp', rcResp)
+  console.log('rcResp', rcResp);
   useEffect(() => {
-    if(zip) {
+    if (zip) {
       rcResp.refetch();
-      setShowList(false)
+      setShowList(false);
     }
-  }, [zip])
+  }, [zip]);
 
   return (
     <div className={classes.root}>
