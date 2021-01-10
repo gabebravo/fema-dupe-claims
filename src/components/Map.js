@@ -42,6 +42,7 @@ export default function Map({
   error = null,
   isFetching = false,
   setShowList = () => false,
+  zip = '',
 }) {
   const classes = useStyles();
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
@@ -72,19 +73,20 @@ export default function Map({
       )
       .toFixed(2);
 
-  const fetchCityCoordinates = async () => {
+  const fetchCityCoordinates = async (zip) => {
     const resp = await axios.get(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=Mountain+View,+CA&key=${process.env.REACT_APP_GMAPS_KEY}`
+      `https://maps.googleapis.com/maps/api/geocode/json?key=${process.env.REACT_APP_GMAPS_KEY}&components=postal_code:${zip}`
     );
-    console.log('data', resp.data);
+    const coordinates = resp?.data?.results[0]?.geometry?.location;
+    if (coordinates) {
+      setLat(coordinates?.lat);
+      setLong(coordinates?.lng);
+    }
   };
 
   useEffect(() => {
     if (status === 'success' && data?.data.length > 0) {
-      const coordinates = fetchCityCoordinates();
-      console.log('coordinates', coordinates);
-      setLat(Number(data?.data[0]?.latitude));
-      setLong(Number(data?.data[0]?.longitude));
+      fetchCityCoordinates(zip);
       setTotalClaims(getTotalNClaims(data?.data));
       setBuildingPaid(getTotalBuildingPaid(data?.data));
       setContentsPaid(getTotalContentsPaid(data?.data));
